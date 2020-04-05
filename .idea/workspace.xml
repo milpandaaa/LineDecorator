@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="8" targetName="8" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="916d32ae-09a7-4563-8c5b-ab86d01a7e75" name="Default Changelist" comment="" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/LineDecorator" />
+  </component>
+  <component name="ProjectId" id="1Z8GXPfOhvY5RZqSDW8jJ2d8kfW" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.appearance" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager">
+    <configuration name="8" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="8" TARGET_NAME="8" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="8" RUN_TARGET_NAME="8">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="916d32ae-09a7-4563-8c5b-ab86d01a7e75" name="Default Changelist" comment="" />
+      <created>1584213347012</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1584213347012</updated>
+      <workItem from="1584213349495" duration="1775000" />
+      <workItem from="1584254312605" duration="919000" />
+      <workItem from="1584337383956" duration="6000" />
+      <workItem from="1584340658011" duration="3603000" />
+      <workItem from="1584558899595" duration="601000" />
+      <workItem from="1584626471898" duration="283000" />
+      <workItem from="1584640475690" duration="10000" />
+      <workItem from="1584684679915" duration="109000" />
+      <workItem from="1584891453876" duration="791000" />
+      <workItem from="1584964054723" duration="4952000" />
+      <workItem from="1585393388270" duration="16286000" />
+      <workItem from="1585564801803" duration="8218000" />
+      <workItem from="1585739189753" duration="604000" />
+      <workItem from="1585758449810" duration="1110000" />
+      <workItem from="1585826557130" duration="6000" />
+      <workItem from="1585934576285" duration="769000" />
+      <workItem from="1585995371445" duration="9105000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
