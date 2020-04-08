@@ -1,0 +1,270 @@
+#include <iostream>
+#include <iterator>
+#include <fstream>
+#include <queue>
+#include <string>
+#include <cstring>
+using namespace std;
+class Data{
+protected:
+    queue<string> file;
+    queue<string> file_;
+public:
+    Data():file(){}
+    Data(ifstream& stream){
+        //line();
+        while(stream) {
+            string strInput;
+            getline(stream, strInput);
+            cout<<strInput;
+            file.push(strInput);
+        }
+    }
+    virtual ~Data()= default;
+    virtual void line()=0;
+    void write(ostream &out){
+        while(!file_.empty())
+           // cout<<"mypj";
+        {
+            string temp = file_.front();
+            file_.pop();
+            cout << temp << endl;
+        }
+        cout << endl;
+    }
+};
+//class File : public Data {
+//public:
+//    File(ifstream &stream) : Data(stream){}
+//    virtual queue<string> line() override{
+//        queue<string> resultLine;
+//        string resultString;
+//        while(stream){
+//            getline(stream, resultString);
+//            resultLine.push(resultString);
+//        }
+//        return resultLine;
+//    }
+//};
+
+class DataDecorator : public Data{
+public:
+    Data *data;
+    DataDecorator()= default;
+    DataDecorator(Data *data_): data(data_) {}
+};
+
+class HTMLDecorator : public DataDecorator{
+private:
+    string changeInHTML(string line){
+        string newLine;
+        bool regularLine = 0;
+        for(char charLine : line){
+            if(charLine=='\'')
+                newLine+="&#39";
+            else if (charLine=='&')
+                    newLine+="&amp";
+                else if (charLine=='<')
+                        newLine+="&lt";
+                    else if (charLine=='>')
+                            newLine+="&gt";
+                        else if (charLine=='"')
+                                newLine+="&quot";
+                            else
+                            newLine+=newLine;
+        }
+        return newLine;
+    }
+public:
+    HTMLDecorator(Data* data): DataDecorator(data) {}
+    virtual void line() override{
+        string temp;
+        string tagOpen [3] = {"<html>","<body>","<pre>"};
+        for(int i=0;i<3;i++)
+            file_.push(tagOpen[i]);
+        while (!file.empty()) {
+            temp=file.front();
+            file.pop();
+            file_.push(changeInHTML(temp));
+        }
+        string tagClose[3] = {"</pre>","</body>","</html>"};
+        for(int i=0;i<3;i++)
+            file_.push(tagOpen[i]);
+    }
+};
+
+class LineDecorator : public DataDecorator{
+private:
+    string changeInHTML(string line, int i){
+        char temp[4];
+        temp[0] = (char)i;
+        temp[1] = ' ';
+        temp[2] = '|';
+        temp[3] = ' ';
+        return line.insert(0,temp);
+    }
+public:
+    LineDecorator(Data* data): DataDecorator(data){}
+    virtual void line() override{
+        //queue<string> file_;
+        string temp;
+        string tagOpen [3] = {"<html>","<body>","<pre>"};
+        for(int i=0;i<3;i++)
+            file.push(tagOpen[i]);
+        int i=1;
+        while (!file.empty()) {
+            temp=file.front();
+            file.pop();
+            file_.push(changeInHTML(temp,i));
+        }
+        string tagClose[3] = {"</pre>","</body>","</html>"};
+        for(int i=0;i<3;i++)
+            file_.push(tagOpen[i]);
+    }
+};
+
+class СPPDecorator : public DataDecorator{
+private:
+    string insertToLine(string line, const char *word,string colour){
+        int pos = line.find(word, 0);
+        line.insert(pos, 1, '<font colour=');
+        line.insert(pos+13,colour);
+        line.insert(pos+20,1,'> ');
+        line.insert(pos+strlen(word)+1,1,'</front>');
+        return line;
+    }
+    string changeColour(string line, const char *word, string type){
+        if(type == "type"){
+            line=insertToLine(line, word,"0000FF");
+        }
+        if(type == "operator"){
+            line=insertToLine(line, word,"FF0000");
+        }
+        if(type == "construction"){
+            line=insertToLine(line, word,"4B0082");
+        }
+        if(type == "etc"){
+            line=insertToLine(line, word,"808000");
+        }
+        return line;
+    }
+    string changeInHTML(string line,int i){
+
+        string newLine;
+            if (line.find("void", 0))
+                line=changeColour(line,"void","type");
+            if (line.find("bool", 0))
+                line=changeColour(line,"bool","type");
+            if (line.find("int", 0))
+                line=changeColour(line,"int","type");
+            if (line.find("float", 0))
+                line=changeColour(line,"float","type");
+            if (line.find("double", 0))
+                line=changeColour(line,"double","type");
+            if (line.find("string", 0))
+                line=changeColour(line,"string","type");
+            if (line.find("long", 0))
+                line=changeColour(line,"long","type");
+            if (line.find("char", 0))
+                line=changeColour(line,"char","type");
+            if (line.find("unsigned", 0))
+                line=changeColour(line,"unsigned","type");
+            if (line.find("short", 0))
+                line=changeColour(line,"short","type");
+
+            if (line.find("or", 0))
+                line=changeColour(line,"double","operator");
+            if (line.find("and", 0))
+                line=changeColour(line,"and","operator");
+            if (line.find("break", 0))
+                line=changeColour(line,"break","operator");
+            if (line.find("continue", 0))
+                line=changeColour(line,"continue","operator");
+
+            if (line.find("for", 0))
+                line=changeColour(line,"for","construction");
+            if (line.find("while", 0))
+                line=changeColour(line,"while","construction");
+            if (line.find("if", 0))
+                line=changeColour(line,"if","construction");
+            if (line.find("else", 0))
+                line=changeColour(line,"else","construction");
+            if (line.find("do", 0))
+                line=changeColour(line,"do","construction");
+            if (line.find("switch", 0))
+                line=changeColour(line,"switch","construction");
+            if (line.find("case", 0))
+                line=changeColour(line,"case","construction");
+            if (line.find("goto", 0))
+                line=changeColour(line,"goto","construction");
+            if (line.find("throw", 0))
+                line=changeColour(line,"throw","construction");
+            if (line.find("try", 0))
+                line=changeColour(line,"try","construction");
+            if (line.find("catch", 0))
+                line=changeColour(line,"catch","construction");
+            if (line.find("virtual", 0))
+                line=changeColour(line,"virtual","construction");
+
+            if (line.find("using", 0))
+                line=changeColour(line,"using","etc");
+            if (line.find("namespace", 0))
+                line=changeColour(line,"namespace","etc");
+            if (line.find("static", 0))
+                line=changeColour(line,"static","etc");
+            if (line.find("const", 0))
+                line=changeColour(line,"const","etc");
+            if (line.find("new", 0))
+                line=changeColour(line,"new","etc");
+            if (line.find("return", 0))
+                line=changeColour(line,"return","etc");
+
+        return newLine;
+    }
+public:
+    СPPDecorator(Data *source):DataDecorator(source){}
+    void line() override{
+        string temp;
+        string tagOpen [3] = {"<html>","<body>","<pre>"};
+        for(int i=0;i<3;i++)
+            file.push(tagOpen[i]);
+        int i=1;
+        while (!file.empty()) {
+            temp=file.front();
+            file.pop();
+            file_.push(changeInHTML(temp,i));
+        }
+        string tagClose[3] = {"</pre>","</body>","</html>"};
+        for(int i=0;i<3;i++)
+            file_.push(tagOpen[i]);
+    }
+};
+//    void rewriting(queue<string> Q)
+//    {
+//        std::fstream in("C:\\Users\\milpa\\CLionProjects\\8\\Text.txt", std::ios::in);
+//        in.close();
+//        in.open("C:\\Users\\milpa\\CLionProjects\\8\\Text.txt", std::ios::out | std::ios::in);
+//        //ofstream fout;
+//        fout.open("C:\\Users\\milpa\\CLionProjects\\8\\Text.txt");
+//        std::ifstream into("C:\\Users\\milpa\\CLionProjects\\8\\Text.txt");
+//        for_each(istream_iterator<string>(into),istream_iterator<string>(),[&Q](string temp)
+//        {
+//            Q.push(temp);
+//        });
+//        fout.close();
+//    }
+
+int main(int argc, char* argv[]) {
+    ifstream inf;
+    inf.open("C:\\Users\\milpa\\CLionProjects\\8\\Text.txt");
+    if(!inf){
+        cout<<"Test.txt could not be open for reading!"<<endl;
+        return 1;
+    }
+    ofstream io;
+    io.open("C:\\Users\\milpa\\CLionProjects\\8\\Text.txt");
+    Data *html = new HTMLDecorator(new Data(inf));
+    html->line();
+    html->write(io);
+    return 0;
+}
