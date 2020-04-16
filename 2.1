@@ -1,0 +1,220 @@
+#include <iostream>
+#include <fstream>
+#include <queue>
+#include <string>
+#include <cstring>
+using namespace std;
+class Data{
+public:
+    queue<string> file;
+    Data() : file(){}
+    Data(const string adress){
+        ifstream stream;
+        stream.open(adress);
+        if(!stream){
+            throw std::runtime_error("Test.txt could not be open for reading!");
+        }
+        while(stream) {
+            string strInput;
+            getline(stream, strInput);
+            file.push(strInput);
+        }
+        stream.close();
+    }
+    virtual ~Data()= default;
+    virtual void line()=0;
+    void write(const string adress){
+        this->file = listHTML();
+        fstream fout;
+        fout.open(adress);
+        if(!fout){
+            throw std::runtime_error("Test.txt could not be open for writing!");
+        }
+        while(!file.empty())
+        {
+            string temp = file.front();
+            file.pop();
+            fout << temp << endl;
+        }
+        fout.close();
+    }
+
+private:
+    queue<string> listHTML(){
+        queue<string> file_;
+        string temp;
+        string tagOpen [3] = {"<html>","<body>","<pre>"};
+        for(int i=0;i<3;i++)
+            file_.push(tagOpen[i]);
+        while (!file.empty()) {
+            temp=file.front();
+            file.pop();
+            file_.push(temp);
+        }
+        string tagClose[3] = {"</pre>","</body>","</html>"};
+        for(int i=0;i<3;i++)
+            file_.push(tagClose[i]);
+        return file_;
+    }
+};
+class File : public Data {
+public:
+    File(const string adress) : Data(adress){}
+    virtual void line() override{}
+};
+class DataDecorator : public Data{
+protected:
+    Data *data;
+public:
+    DataDecorator()= default;
+    DataDecorator(Data *data_) : data(data_){
+        this->file = data_->file;
+    }
+    virtual void line()override{}
+};
+class HTMLDecorator : public DataDecorator{
+private:
+    string changeInHTML(string line){
+        string newLine;
+        char *charLine ;//= new char[line.length()];
+        charLine = const_cast<char *>(line.c_str());
+        for(int i=0;i<line.length();i++){
+            if(charLine[i]=='\'') {
+                newLine += "&#39";
+            }else if (charLine[i]=='&') {
+                newLine += "&amp";
+            }else if (charLine[i]=='<') {
+                newLine += "&lt";
+            }else if (charLine[i]=='>') {
+                newLine += "&gt";
+            }else if (charLine[i]=='"') {
+                newLine += "&quot";
+            }else
+                newLine+=charLine[i];
+        }
+        return newLine;
+    }
+public:
+    HTMLDecorator(Data *data):DataDecorator(data){
+        line();
+    }
+    virtual void line() override{
+        queue<string> file_;
+        string temp;
+        while (!file.empty()) {
+            temp=file.front();
+            file.pop();
+            file_.push(changeInHTML(temp));
+        }
+        file=file_;
+    }
+};
+
+class LineDecorator : public DataDecorator{
+private:
+    string changeInHTML(string line, int i){
+        string temp(" | ");
+        string s = to_string(i);
+        temp.insert(0, s);
+        return line.insert(0,temp);
+    }
+public:
+    LineDecorator(Data *data):DataDecorator(data) {
+        line();
+    }
+    virtual void line() override{
+        queue<string> file_;
+        string temp;
+        int i=1;
+        while (!file.empty()) {
+            temp=file.front();
+            file.pop();
+            file_.push(changeInHTML(temp,i));
+            i++;
+        }
+        file=file_;
+    }
+};
+
+class CPPDecorator : public DataDecorator{
+private:
+    void changeColour(string &data, string toSearch, string type)
+    {
+        string colour;
+        if(type == "type"){
+            colour = "0000FF";
+        }
+        if(type == "operator"){
+            colour = "FF0000";
+        }
+        if(type == "construction"){
+            colour = "4B0082";
+        }
+        if(type == "etc"){
+            colour = "808000";
+        }
+        string replaceStr;
+        string before ("<front colour=");
+        string after ("</front>");
+        replaceStr.insert(0, before);
+        replaceStr.insert(14,colour);
+        string tag ("> ");
+        replaceStr.insert(20,tag);
+        replaceStr.insert(21,toSearch);
+        replaceStr.insert(21+toSearch.size(),after);
+        size_t pos = data.find(toSearch);
+        while( pos != std::string::npos || pos==0)
+        {
+            data.replace(pos, toSearch.size(), replaceStr);
+            pos =data.find(toSearch, pos + replaceStr.size());
+        }
+    }
+    string changeInHTML(string &line,int i) {
+        char *keyWordType[] = {"void", "auto", "int", "bool", "float", "double", "string", "long", "unsigned", "char",
+                               "short"};
+        char *keyWordOperator[] = {"or", "and", "break", "continue"};
+        char *keyWordConstruction[] = {"for", "while", "if", "try", "catch", "else", "do", "switch", "goto", "virtual"};
+        char *keyWordEtc[] = {"using", "namespace", "static", "const", "new", "return"};
+        for(string toSearch : keyWordType)
+            if(line.find(toSearch,0))
+                changeColour(line,toSearch,"type");
+        for(string toSearch : keyWordOperator)
+            if(line.find(toSearch,0))
+                changeColour(line,toSearch,"operator");
+        for(string toSearch : keyWordConstruction)
+            if(line.find(toSearch,0))
+                changeColour(line,toSearch,"construction");
+        for(string toSearch : keyWordEtc)
+            if(line.find(toSearch,0))
+                changeColour(line,toSearch,"etc");
+        return line;
+    }
+public:
+    CPPDecorator(Data *data):DataDecorator(data){
+        line();
+    }
+    void line() override{
+        queue<string> file_;
+        string temp;
+        int i=1;
+        while (!file.empty()) {
+            temp=file.front();
+            file.pop();
+            file_.push(changeInHTML(temp,i));
+        }
+        file=file_;
+    }
+};
+
+int main(int argc, char* argv[]) {
+    try{
+    const string adress{"C:\\Users\\milpa\\CLionProjects\\8\\Text.txt"};
+    Data *html = new CPPDecorator( new LineDecorator(new HTMLDecorator(new File(adress))));
+    html->write(adress);
+}
+catch(std::exception const& e)
+{
+    std::cout << "Exception: " << e.what() << std::endl;
+}
+    return 0;
+}
